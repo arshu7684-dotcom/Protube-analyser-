@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProTube Analyzer | YouTube Video Analysis Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --background: #f8f9fa;
+            --surface: #ffffff;
+            --text-primary: #2b2d42;
+            --text-secondary: #6c757d;
+            --text-light: #adb5bd;
+            --border: #e9ecef;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --gradient: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: var(--gradient);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .logo-text h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .logo-text p {
+            font-size: 1.1rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Input Section */
+        .input-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .youtube-input-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        #youtube-url {
+            flex: 1;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        #youtube-url:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        button {
+            padding: 14px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        button:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #6511a3;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+        }
+
+        .btn-accent:hover {
+            background: #e11576;
+        }
+
+        .video-info {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(67, 97, 238, 0.05);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .video-thumbnail {
+            width: 120px;
+            height: 90px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .video-details {
+            flex: 1;
+        }
+
+        .video-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .video-channel {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Save Transcript Section */
+        .save-transcript-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .save-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .save-option {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .save-option:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .save-icon {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .save-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+        }
+
+        .save-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .save-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .card-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* Keyword Density */
+        .keyword-density {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .keyword-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .keyword-list {
+            margin-bottom: 1rem;
+        }
+
+        .keyword-list h4 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .keyword-list h4 i {
+            color: var(--primary);
+        }
+
+        .keyword-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .keyword-text {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .keyword-count {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .info-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .info-card h3 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-card h3 i {
+            color: var(--primary);
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .info-list i {
+            color: var(--primary);
+            width: 20px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-primary);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                grid-row: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .keyword-columns {
+                grid-template-columns: 1fr;
+            }
+            
+            .youtube-input-container {
+                flex-direction: column;
+            }
+            
+            .video-info {
+                flex-direction: column;
+            }
+            
+            .video-thumbnail {
+                width: 100%;
+                height: auto;
+            }
+            
+            .save-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-chart-line logo-icon"></i>
+                    <div class="logo-text">
+                        <h1>ProTube Analyzer</h1>
+                        <p>Advanced YouTube Video Analysis Tool</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="content-main">
+                <section class="input-section">
+                    <h2 class="section-title"><i class="fas fa-link"></i> Analyze YouTube Video</h2>
+                    
+                    <div class="youtube-input-container">
+                        <input type="text" id="youtube-url" placeholder="Paste YouTube video URL here...">
+                        <button id="analyze-video-btn"><i class="fas fa-chart-bar"></i> Analyze Video</button>
+                    </div>
+                    
+                    <div class="video-info" id="video-info">
+                        <img class="video-thumbnail" id="video-thumbnail" src="" alt="Video thumbnail">
+                        <div class="video-details">
+                            <div class="video-title" id="video-title"></div>
+                            <div class="video-channel" id="video-channel"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="loading" id="youtube-loading">
+                        <div class="spinner"></div>
+                        <p>Analyzing video content...</p>
+                    </div>
+                    
+                    <textarea id="youtube-transcript" placeholder="Video transcript will appear here..." readonly></textarea>
+                </section>
+
+                <section class="save-transcript-section">
+                    <h2 class="section-title"><i class="fas fa-save"></i> Save Transcript</h2>
+                    <p>Export the analyzed transcript in your preferred format</p>
+                    
+                    <div class="save-options">
+                        <div class="save-option">
+                            <i class="fas fa-file-text save-icon"></i>
+                            <div class="save-title">Text File</div>
+                            <div class="save-description">Save as .txt file</div>
+                            <button class="save-btn" data-format="txt">
+                                <i class="fas fa-download"></i> Save as TXT
+                            </button>
+                        </div>
+                        <div class="save-option">
+                            <i class="fas fa-file-pdf save-icon"></i>
+                            <div class="save-title">PDF Document</div>
+                            <div class="save-description">Save as .pdf file</div>
+                            <button class="save-btn" data-format="pdf">
+                                <i class="fas fa-download"></i> Save as PDF
+                            </button>
+                        </div>
+                        <div class="save-option">
+                            <i class="fas fa-copy save-icon"></i>
+                            <div class="save-title">Copy to Clipboard</div>
+                            <div class="save-description">Copy text to clipboard</div>
+                            <button class="save-btn" data-format="clipboard">
+                                <i class="fas fa-copy"></i> Copy Text
+                            </button>
+                        </div>
+                        <div class="save-option">
+                            <i class="fas fa-print save-icon"></i>
+                            <div class="save-title">Print Transcript</div>
+                            <div class="save-description">Print the transcript</div>
+                            <button class="save-btn" data-format="print">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="metrics-section">
+                    <h2 class="section-title"><i class="fas fa-tachometer-alt"></i> Content Analysis</h2>
+                    
+                    <div class="metrics-grid">
+                        <div class="card">
+                            <i class="fas fa-font card-icon"></i>
+                            <div class="card-label">Words</div>
+                            <div class="card-value" id="word-count">0</div>
+                        </div>
+                        <div class="card">
+                            <i class="fas fa-text-width card-icon"></i>
+                            <div class="card-label">Characters</div>
+                            <div class="card-value" id="char-count">0</div>
+                        </div>
+                        <div class="card">
+                            <i class="fas fa-minus card-icon"></i>
+                            <div class="card-label">Characters (no spaces)</div>
+                            <div class="card-value" id="char-no-spaces-count">0</div>
+                        </div>
+                        <div class="card">
+                            <i class="fas fa-terminal card-icon"></i>
+                            <div class="card-label">Sentences</div>
+                            <div class="card-value" id="sentence-count">0</div>
+                        </div>
+                        <div class="card">
+                            <i class="fas fa-paragraph card-icon"></i>
+                            <div class="card-label">Paragraphs</div>
+                            <div class="card-value" id="paragraph-count">0</div>
+                        </div>
+                        <div class="card">
+                            <i class="fas fa-user-graduate card-icon"></i>
+                            <div class="card-label">Reading Level</div>
+                            <div class="card-value" id="reading-level">-</div>
+                        </div>
+                        <div class="card">
+                            <i class="fas fa-book-reader card-icon"></i>
+                            <div class="card-label">Reading Time</div>
+                            <div class="card-value" id="reading-time">0 min</div>
+                        </div>
+                        <div class="card">
+                            <i class="fas fa-microphone card-icon"></i>
+                            <div class="card-label">Speaking Time</div>
+                            <div class="card-value" id="speaking-time">0 min</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="keyword-density">
+                    <h2 class="section-title"><i class="fas fa-key"></i> Keyword Density</h2>
+                    <div class="keyword-columns">
+                        <div class="keyword-list">
+                            <h4><i class="fas fa-font"></i> Top Single Words</h4>
+                            <div id="single-words-list"></div>
+                        </div>
+                        <div class="keyword-list">
+                            <h4><i class="fas fa-text-width"></i> Top 2-Word Phrases</h4>
+                            <div id="two-words-list"></div>
+                        </div>
+                        <div class="keyword-list">
+                            <h4><i class="fas fa-align-left"></i> Top 3-Word Phrases</h4>
+                            <div id="three-words-list"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="sidebar">
+                <div class="info-card">
+                    <h3><i class="fas fa-info-circle"></i> How It Works</h3>
+                    <ul class="info-list">
+                        <li><i class="fas fa-link"></i> Paste YouTube video URL</li>
+                        <li><i class="fas fa-chart-bar"></i> Click "Analyze Video"</li>
+                        <li><i class="fas fa-file-alt"></i> View transcript & metrics</li>
+                        <li><i class="fas fa-save"></i> Save transcript if needed</li>
+                    </ul>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-lightbulb"></i> Pro Tips</h3>
+                    <ul class="info-list">
+                        <li><i class="fas fa-check"></i> Use for content research</li>
+                        <li><i class="fas fa-check"></i> Analyze competitor videos</li>
+                        <li><i class="fas fa-check"></i> Improve your own content</li>
+                        <li><i class="fas fa-check"></i> Check readability scores</li>
+                    </ul>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-shield-alt"></i> Privacy & Terms</h3>
+                    <ul class="info-list">
+                        <li><i class="fas fa-lock"></i> We don't store your data</li>
+                        <li><i class="fas fa-user-secret"></i> 100% private analysis</li>
+                        <li><i class="fas fa-gavel"></i> For educational use only</li>
+                        <li><i class="fas fa-check-circle"></i> 100% Legal & Safe</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="logo-text">
+                        <h3>ProTube Analyzer</h3>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Home</a>
+                    <a href="#">Features</a>
+                    <a href="#">Pricing</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div class="copyright">
+                    &copy; 2023 ProTube Analyzer. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const youtubeUrlInput = document.getElementById('youtube-url');
+        const analyzeVideoBtn = document.getElementById('analyze-video-btn');
+        const youtubeTranscript = document.getElementById('youtube-transcript');
+        const videoInfo = document.getElementById('video-info');
+        const videoThumbnail = document.getElementById('video-thumbnail');
+        const videoTitle = document.getElementById('video-title');
+        const videoChannel = document.getElementById('video-channel');
+        const youtubeLoading = document.getElementById('youtube-loading');
+        const saveButtons = document.querySelectorAll('.save-btn');
+        
+        const wordCountEl = document.getElementById('word-count');
+        const charCountEl = document.getElementById('char-count');
+        const charNoSpacesCountEl = document.getElementById('char-no-spaces-count');
+        const sentenceCountEl = document.getElementById('sentence-count');
+        const paragraphCountEl = document.getElementById('paragraph-count');
+        const readingLevelEl = document.getElementById('reading-level');
+        const readingTimeEl = document.getElementById('reading-time');
+        const speakingTimeEl = document.getElementById('speaking-time');
+        const singleWordsListEl = document.getElementById('single-words-list');
+        const twoWordsListEl = document.getElementById('two-words-list');
+        const threeWordsListEl = document.getElementById('three-words-list');
+
+        // Common English stop words to exclude from keyword density
+        const stopWords = new Set([
+            'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 
+            'as', 'is', 'was', 'are', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 
+            'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'i', 'you', 'he', 'she', 
+            'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them', 'my', 'your', 'his', 'its', 'our', 
+            'their', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'being', 
+            'been', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'will', 'would', 'shall', 
+            'should', 'may', 'might', 'must', 'can', 'could', 'about', 'above', 'after', 'again', 'against', 
+            'all', 'am', 'an', 'and', 'any', 'are', 'as', 'at', 'be', 'because', 'been', 'before', 'being', 
+            'below', 'between', 'both', 'but', 'by', 'can', 'cannot', 'could', 'did', 'do', 'does', 'doing', 
+            'down', 'during', 'each', 'few', 'for', 'from', 'further', 'had', 'has', 'have', 'having', 'he', 
+            'her', 'here', 'hers', 'herself', 'him', 'himself', 'his', 'how', 'i', 'if', 'in', 'into', 'is', 
+            'it', 'its', 'itself', 'me', 'more', 'most', 'my', 'myself', 'no', 'nor', 'not', 'of', 'off', 
+            'on', 'once', 'only', 'or', 'other', 'our', 'ours', 'ourselves', 'out', 'over', 'own', 'same', 
+            'she', 'should', 'so', 'some', 'such', 'than', 'that', 'the', 'their', 'theirs', 'them', 
+            'themselves', 'then', 'there', 'these', 'they', 'this', 'those', 'through', 'to', 'too', 'under', 
+            'until', 'up', 'very', 'was', 'we', 'were', 'what', 'when', 'where', 'which', 'while', 'who', 
+            'whom', 'why', 'will', 'with', 'you', 'your', 'yours', 'yourself', 'yourselves'
+        ]);
+
+        // Event listener for YouTube video analysis
+        analyzeVideoBtn.addEventListener('click', analyzeYouTubeVideo);
+
+        // Event listener for save buttons
+        saveButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const format = this.getAttribute('data-format');
+                saveTranscript(format);
+            });
+        });
+
+        // Event listener for YouTube transcript changes
+        youtubeTranscript.addEventListener('input', () => {
+            updateMetrics(youtubeTranscript.value);
+        });
+
+        // Initialize metrics
+        updateMetrics('');
+
+        // Main function to update all metrics
+        function updateMetrics(text) {
+            // Basic counts
+            const wordCount = countWords(text);
+            const charCount = text.length;
+            const charNoSpacesCount = text.replace(/\s/g, '').length;
+            const sentenceCount = countSentences(text);
+            const paragraphCount = countParagraphs(text);
+            
+            // Update basic metrics
+            wordCountEl.textContent = wordCount.toLocaleString();
+            charCountEl.textContent = charCount.toLocaleString();
+            charNoSpacesCountEl.textContent = charNoSpacesCount.toLocaleString();
+            sentenceCountEl.textContent = sentenceCount.toLocaleString();
+            paragraphCountEl.textContent = paragraphCount.toLocaleString();
+            
+            // Reading level
+            const readingLevel = calculateReadingLevel(text, wordCount, sentenceCount);
+            readingLevelEl.textContent = readingLevel;
+            
+            // Time estimates
+            const readingTime = calculateReadingTime(wordCount);
+            const speakingTime = calculateSpeakingTime(wordCount);
+            readingTimeEl.textContent = readingTime;
+            speakingTimeEl.textContent = speakingTime;
+            
+            // Keyword density
+            updateKeywordDensity(text);
+        }
+
+        // Analyze YouTube video
+        function analyzeYouTubeVideo() {
+            const url = youtubeUrlInput.value.trim();
+            
+            if (!url) {
+                alert('Please enter a YouTube URL');
+                return;
+            }
+            
+            const videoId = extractYouTubeVideoId(url);
+            
+            if (!videoId) {
+                alert('Please enter a valid YouTube URL');
+                return;
+            }
+            
+            // Show loading indicator
+            youtubeLoading.style.display = 'block';
+            analyzeVideoBtn.disabled = true;
+            
+            // In a real implementation, you would fetch the transcript from a server
+            // For this demo, we'll simulate fetching with a timeout and use placeholder data
+            setTimeout(() => {
+                // This is a simulation - in a real app, you would call your backend API
+                const simulatedTranscript = simulateTranscriptFetch(videoId);
+                
+                // Update UI with video info and transcript
+                updateVideoInfo(videoId);
+                youtubeTranscript.value = simulatedTranscript;
+                
+                // Update metrics with the transcript
+                updateMetrics(simulatedTranscript);
+                
+                // Hide loading indicator
+                youtubeLoading.style.display = 'none';
+                analyzeVideoBtn.disabled = false;
+            }, 2000);
+        }
+
+        // Save transcript function
+        function saveTranscript(format) {
+            const transcript = youtubeTranscript.value;
+            
+            if (!transcript.trim()) {
+                alert('Please analyze a video first to get the transcript');
+                return;
+            }
+            
+            // Get video title for filename
+            const videoTitleText = document.getElementById('video-title').textContent || 'youtube_video';
+            const cleanTitle = videoTitleText.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            
+            // Simulate saving process
+            const saveBtn = document.querySelector(`.save-btn[data-format="${format}"]`);
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            saveBtn.disabled = true;
+            
+            setTimeout(() => {
+                switch(format) {
+                    case 'txt':
+                        downloadAsTxt(transcript, cleanTitle);
+                        break;
+                    case 'pdf':
+                        downloadAsPdf(transcript, cleanTitle);
+                        break;
+                    case 'clipboard':
+                        copyToClipboard(transcript);
+                        break;
+                    case 'print':
+                        printTranscript(transcript);
+                        break;
+                }
+                
+                saveBtn.innerHTML = '<i class="fas fa-check"></i> Done!';
+                setTimeout(() => {
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.disabled = false;
+                }, 2000);
+            }, 1500);
+        }
+
+        // Download as TXT file
+        function downloadAsTxt(text, filename) {
+            const element = document.createElement('a');
+            const file = new Blob([text], {type: 'text/plain'});
+            element.href = URL.createObjectURL(file);
+            element.download = `${filename}_transcript.txt`;
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // Download as PDF (simulated - in real implementation use a library like jsPDF)
+        function downloadAsPdf(text, filename) {
+            // In a real implementation, use jsPDF library
+            // For demo, we'll show an alert
+            alert('PDF export would be implemented with a library like jsPDF in a real application. For now, you can use the Print option and "Save as PDF" from the print dialog.');
+            
+            // Simulate PDF download
+            const element = document.createElement('a');
+            const file = new Blob([text], {type: 'application/pdf'});
+            element.href = URL.createObjectURL(file);
+            element.download = `${filename}_transcript.pdf`;
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Success feedback is handled in the saveTranscript function
+            }).catch(err => {
+                alert('Failed to copy text to clipboard: ' + err);
+            });
+        }
+
+        // Print transcript
+        function printTranscript(text) {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>YouTube Video Transcript</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+                            h1 { color: #333; }
+                            .transcript { white-space: pre-line; margin-top: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>YouTube Video Transcript</h1>
+                        <div class="transcript">${text}</div>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Extract YouTube video ID from URL
+        function extractYouTubeVideoId(url) {
+            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[7].length === 11) ? match[7] : null;
+        }
+
+        // Update video information display
+        function updateVideoInfo(videoId) {
+            // Show video info section
+            videoInfo.style.display = 'flex';
+            
+            // Set thumbnail
+            videoThumbnail.src = `https://img.youtube.com/vi/${videoId}/0.jpg`;
+            videoThumbnail.alt = 'Video thumbnail';
+            
+            // In a real implementation, you would fetch the actual video title and channel
+            // For demo purposes, we'll use placeholder text
+            videoTitle.textContent = 'How to Build a Professional YouTube Analytics Tool';
+            videoChannel.textContent = 'By: WebDev Masters';
+        }
+
+        // Simulate fetching a transcript (in a real app, this would be an API call)
+        function simulateTranscriptFetch(videoId) {
+            // This is a placeholder transcript for demonstration
+            return `Welcome to our tutorial on building a professional YouTube analytics tool. In this video, we'll explore how to create a tool that can analyze any YouTube video's transcript and provide valuable insights.
+
+First, we need to understand what kind of data we can extract from a video transcript. We can count words, characters, sentences, and paragraphs. We can also calculate reading level, estimate reading and speaking time, and analyze keyword density.
+
+Let's start with word count. This is the total number of words in the video transcript. It gives us an idea of how content-rich the video is.
+
+Next, we have character count with and without spaces. This is useful for understanding the density of the content.
+
+Sentence and paragraph counts help us understand the structure of the content. Are the sentences short and concise or long and complex?
+
+The reading level tells us how difficult the content is to understand. This is calculated using the Flesch-Kincaid formula.
+
+Reading time is estimated based on an average reading speed of 200 words per minute. Speaking time is estimated at 130 words per minute.
+
+Keyword density shows us the most frequently used words and phrases in the content. This is valuable for SEO and content analysis.
+
+In a real implementation, we would connect to the YouTube API to fetch transcripts and then process them with our analysis algorithms.
+
+Thank you for watching! Don't forget to like and subscribe for more content on web development and data analysis.`;
+        }
+
+        // Count words in text
+        function countWords(text) {
+            if (text.trim() === '') return 0;
+            return text.trim().split(/\s+/).length;
+        }
+
+        // Count sentences in text
+        function countSentences(text) {
+            if (text.trim() === '') return 0;
+            // Split by common sentence endings and filter out empty strings
+            const sentences = text.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0);
+            return sentences.length;
+        }
+
+        // Count paragraphs in text
+        function countParagraphs(text) {
+            if (text.trim() === '') return 0;
+            // Split by line breaks and filter out empty paragraphs
+            const paragraphs = text.split(/\n+/).filter(paragraph => paragraph.trim().length > 0);
+            return paragraphs.length;
+        }
+
+        // Calculate reading level using Flesch-Kincaid Grade Level
+        function calculateReadingLevel(text, wordCount, sentenceCount) {
+            if (wordCount === 0 || sentenceCount === 0) return '-';
+            
+            // Count syllables (approximation)
+            let syllableCount = 0;
+            const words = text.toLowerCase().match(/\b\w+\b/g) || [];
+            
+            words.forEach(word => {
+                syllableCount += countSyllables(word);
+            });
+            
+            // Flesch-Kincaid Grade Level formula
+            const gradeLevel = 0.39 * (wordCount / sentenceCount) + 11.8 * (syllableCount / wordCount) - 15.59;
+            
+            return gradeLevel >= 0 ? `Grade ${Math.round(gradeLevel)}` : '-';
+        }
+
+        // Approximate syllable count for a word
+        function countSyllables(word) {
+            word = word.toLowerCase();
+            
+            // Handle common exceptions
+            if (word.length <= 3) return 1;
+            
+            // Count vowel groups (approximation)
+            word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+            word = word.replace(/^y/, '');
+            
+            const matches = word.match(/[aeiouy]{1,2}/g);
+            return matches ? matches.length : 1;
+        }
+
+        // Calculate reading time (200 words per minute)
+        function calculateReadingTime(wordCount) {
+            const minutes = wordCount / 200;
+            if (minutes < 1) return '< 1 min';
+            return `${Math.ceil(minutes)} min`;
+        }
+
+        // Calculate speaking time (130 words per minute)
+        function calculateSpeakingTime(wordCount) {
+            const minutes = wordCount / 130;
+            if (minutes < 1) return '< 1 min';
+            return `${Math.ceil(minutes)} min`;
+        }
+
+        // Update keyword density analysis
+        function updateKeywordDensity(text) {
+            // Clear previous results
+            singleWordsListEl.innerHTML = '';
+            twoWordsListEl.innerHTML = '';
+            threeWordsListEl.innerHTML = '';
+            
+            if (text.trim() === '') {
+                singleWordsListEl.innerHTML = '<div class="keyword-item">No data</div>';
+                twoWordsListEl.innerHTML = '<div class="keyword-item">No data</div>';
+                threeWordsListEl.innerHTML = '<div class="keyword-item">No data</div>';
+                return;
+            }
+            
+            // Get word frequency for single words
+            const singleWords = getWordFrequency(text, 1);
+            displayKeywordList(singleWords, singleWordsListEl);
+            
+            // Get word frequency for 2-word phrases
+            const twoWords = getWordFrequency(text, 2);
+            displayKeywordList(twoWords, twoWordsListEl);
+            
+            // Get word frequency for 3-word phrases
+            const threeWords = getWordFrequency(text, 3);
+            displayKeywordList(threeWords, threeWordsListEl);
+        }
+
+        // Get frequency of n-word phrases
+        function getWordFrequency(text, n) {
+            // Clean text and split into words
+            const words = text.toLowerCase()
+                .replace(/[^\w\s]|_/g, '')
+                .replace(/\s+/g, ' ')
+                .split(' ')
+                .filter(word => word.length > 0 && !stopWords.has(word));
+            
+            const frequency = {};
+            
+            // Generate n-grams and count frequency
+            for (let i = 0; i <= words.length - n; i++) {
+                const phrase = words.slice(i, i + n).join(' ');
+                
+                if (n === 1 && stopWords.has(phrase)) {
+                    continue; // Skip stop words for single words
+                }
+                
+                frequency[phrase] = (frequency[phrase] || 0) + 1;
+            }
+            
+            // Convert to array and sort by frequency
+            return Object.entries(frequency)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5); // Top 5 results
+        }
+
+        // Display keyword list in the DOM
+        function displayKeywordList(keywords, container) {
+            if (keywords.length === 0) {
+                container.innerHTML = '<div class="keyword-item">No data</div>';
+                return;
+            }
+            
+            keywords.forEach(([phrase, count]) => {
+                const item = document.createElement('div');
+                item.className = 'keyword-item';
+                
+                const textSpan = document.createElement('span');
+                textSpan.className = 'keyword-text';
+                textSpan.textContent = phrase;
+                
+                const countSpan = document.createElement('span');
+                countSpan.className = 'keyword-count';
+                countSpan.textContent = count;
+                
+                item.appendChild(textSpan);
+                item.appendChild(countSpan);
+                container.appendChild(item);
+            });
+        }
+    </script>
+</body>
+</html>
